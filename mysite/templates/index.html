@@ -1,0 +1,900 @@
+{% load static i18n cms_tags sekizai_tags menu_tags cache %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+    <head>
+        <meta charset="utf-8">
+        <title> 
+            {% block title %}
+                {% page_attribute page_title %}
+            {% endblock title %}
+        </title>
+        <link rel="shortcut icon" href="../favicon.ico">
+        <link href="{% static '/static/css/bootstrap.min.css' %}" rel="stylesheet">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="description" content="{% page_attribute 'meta_description' %}">
+        <meta name="author" content="">
+        <style>
+        @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
+        
+        * {
+            position: relative;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        html, body {
+            font-family: 'Lato', Arial, sans-serif;
+            background: #4E98E2;
+            color: #fff;
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%;
+        }
+
+        a, button {
+            outline: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .container1{
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            padding: 15px 195px;
+        }
+
+        .container2{
+            width: 100%;
+            height: 100%;
+        }
+
+        .container2 > header {
+            margin: 0 auto;
+            padding: 2em;
+            text-align: center;
+            background: rgba(0,0,0,0.01);
+        }
+
+        .container2 > header h1 {
+            font-size: 2.625em;
+            line-height: 1.3;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .container2 > header span {
+            display: block;
+            font-size: 60%;
+            opacity: 0.7;
+            padding: 0 0 0.6em 0.1em;
+        }
+
+        .component {
+            height: 50%;
+            background: rgba(0,0,0,0.05);
+            font-family: 'Lato', Arial, sans-serif;
+        }
+
+        .component > h2 {
+            position: absolute;
+            overflow: hidden;
+            width: 100%;
+            top: 15%;
+            text-align: center;
+            text-transform: uppercase;
+            white-space: nowrap;
+            font-weight: 400;
+            font-size: 10.5vw;
+            opacity: 0.1;
+            cursor: default;
+        }
+
+        .cn-button {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            z-index: 11;
+            margin-top: -2.25em;
+            margin-left: -2.25em;
+            padding-top: 0em;
+            width: 4.5em;
+            height: 4.5em;
+            border: none;
+            border-radius: 50%;
+            background: none;
+            background-color: #fff;
+            color: #4E98E2;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.5em;
+            text-transform: uppercase;
+            cursor: pointer;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .csstransforms .cn-wrapper {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            z-index: 10;
+            margin-top: -13em;
+            margin-left: -13.5em;
+            width: 27em;
+            height: 27em;
+            border-radius: 50%;
+            opacity: 0;
+            -webkit-transition: all .3s ease 0.3s;
+            -moz-transition: all .3s ease 0.3s;
+            transition: all .3s ease 0.3s;
+            -webkit-transform: scale(0.1);
+            -ms-transform: scale(0.1);
+            -moz-transform: scale(0.1);
+            transform: scale(0.1);
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /*cover to prevent extra space of anchors from being clickable*/
+        .csstransforms .cn-wrapper:after{
+          content:".";
+          display:block;
+          font-size:2em;
+          width:8.2em;
+          height:8.2em;
+          position: absolute;
+          left: 50%;
+          margin-left: -3.1em;
+          top:50%;
+          margin-top: -3.1em;
+          border-radius: 50%;
+          z-index:10;
+          color: transparent;
+        }
+
+        .csstransforms .opened-nav {
+            border-radius: 50%;
+            opacity: 1;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            transition: all .3s ease;
+            -webkit-transform: scale(1);
+            -moz-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .csstransforms .cn-wrapper li {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            overflow: hidden;
+            margin-top: -1.3em;
+            margin-left: -10em;
+            width: 10em;
+            height: 10em;
+            font-size: 1.5em;
+            z-index: -1;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            transition: all .3s ease;
+            -webkit-transform: rotate(76deg) skew(60deg);
+            -moz-transform: rotate(76deg) skew(60deg);
+            -ms-transform: rotate(76deg) skew(60deg);
+            transform: rotate(76deg) skew(60deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+            pointer-events: none;
+        }
+
+        .csstransforms .cn-wrapper li > a {
+            position: absolute;
+            right: -7.25em;
+            bottom: -7.25em;
+            display: block;
+            width: 14.5em;
+            height: 14.5em;
+            border-radius: 50%;
+            background: #4E98E2;
+            background: -webkit-radial-gradient(transparent 35%, #3971AA 35%);
+            background: -moz-radial-gradient(transparent 35%, #3971AA 35%);
+            background: radial-gradient(transparent 35%, #3971AA 35%);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1.2em;
+            line-height: 2;
+            -webkit-transform: skew(-60deg) rotate(-75deg) scale(1);
+            -moz-transform: skew(-60deg) rotate(-75deg) scale(1);
+            -ms-transform: skew(-60deg) rotate(-75deg) scale(1);
+            transform: skew(-60deg) rotate(-75deg) scale(1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            pointer-events: auto;
+        }
+
+        .csstransforms .cn-wrapper li a span {
+            position: relative;
+            height: 30px;
+            overflow: hidden;
+            top: 1em;
+            display: block;
+            font-size: .5em;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1em;
+            word-spacing: 9999px;
+        }
+
+        .csstransforms .cn-wrapper li img{
+            top: 0.2em;
+            width: 35px;
+        }       
+
+        .csstransforms .cn-wrapper li a:hover,
+        .csstransforms .cn-wrapper li a:active,
+        .csstransforms .cn-wrapper li a:focus {
+            background: -webkit-radial-gradient(transparent 35%, #1C3956 35%);
+            background: -moz-radial-gradient(transparent 35%, #1C3956 35%);
+            background: radial-gradient(transparent 35%, #1C3956 35%);
+        }
+
+        .csstransforms .opened-nav li {
+            -webkit-transition: all .3s ease .3s;
+            -moz-transition: all .3s ease .3s;
+            transition: all .3s ease .3s;
+        }
+
+        .csstransforms .opened-nav li:first-child {
+            -webkit-transform: rotate(-20deg) skew(60deg);
+            -moz-transform: rotate(-20deg) skew(60deg);
+            -ms-transform: rotate(-20deg) skew(60deg);
+            transform: rotate(-20deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav li:nth-child(2) {
+            -webkit-transform: rotate(12deg) skew(60deg);
+            -moz-transform: rotate(12deg) skew(60deg);
+            -ms-transform: rotate(12deg) skew(60deg);
+            transform: rotate(12deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav  li:nth-child(3) {
+            -webkit-transform: rotate(44deg) skew(60deg);
+            -moz-transform: rotate(44deg) skew(60deg);
+            -ms-transform: rotate(44deg) skew(60deg);
+            transform: rotate(44deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav li:nth-child(4) {
+            -webkit-transform: rotate(76deg) skew(60deg);
+            -moz-transform: rotate(76deg) skew(60deg);
+            -ms-transform: rotate(76deg) skew(60deg);
+            transform: rotate(76deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav li:nth-child(5) {
+            -webkit-transform: rotate(108deg) skew(60deg);
+            -moz-transform: rotate(108deg) skew(60deg);
+            -ms-transform: rotate(108deg) skew(60deg);
+            transform: rotate(108deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav li:nth-child(6) {
+            -webkit-transform: rotate(140deg) skew(60deg);
+            -moz-transform: rotate(140deg) skew(60deg);
+            -ms-transform: rotate(140deg) skew(60deg);
+            transform: rotate(140deg) skew(60deg);
+        }
+
+        .csstransforms .opened-nav li:nth-child(7) {
+            -webkit-transform: rotate(172deg) skew(60deg);
+            -moz-transform: rotate(172deg) skew(60deg);
+            -ms-transform: rotate(172deg) skew(60deg);
+            transform: rotate(172deg) skew(60deg);
+        }
+
+        .no-csstransforms .cn-wrapper {
+            overflow: hidden;
+            margin: 10em auto;
+            padding: .5em;
+            text-align: center;
+        }
+
+        .no-csstransforms .cn-wrapper ul {
+            display: inline-block;
+        }
+
+        .no-csstransforms .cn-wrapper li {
+            float: left;
+            width: 5em;
+            height: 5em;
+            background-color: #fff;
+            text-align: center;
+            font-size: 1em;
+            line-height: 5em;
+        }
+
+        .no-csstransforms .cn-wrapper li a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .no-csstransforms .cn-wrapper li a:hover,
+        .no-csstransforms .cn-wrapper li a:active,
+        .no-csstransforms .cn-wrapper li a:focus {
+            background-color: #3E7CBA;
+        }
+
+        .no-csstransforms .cn-button {
+            display: none;
+        }
+
+            
+        .sublinks {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            z-index: 1;
+            margin-top: -16em;
+            margin-left: -17.5em;
+            width: 35em;
+            height: 35em;
+            border-radius: 50%;
+            display: none;
+            -webkit-transition: all .3s ease 0.3s;
+            -moz-transition: all .3s ease 0.3s;
+            transition: all .3s ease 0.3s;
+            -webkit-transform: scale(0.1);
+            -ms-transform: scale(0.1);
+            -moz-transform: scale(0.1);
+            transform: scale(0.1);
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sublinks:hover{
+            display: block;
+        }
+
+
+        /*cover to prevent extra space of anchors from being clickable*/
+        .csstransforms .sublinks:after{
+          content:".";
+          display:block;
+          font-size:2em;
+          width:8em;
+          height:8em;
+          position: absolute;
+          left: 50%;
+          margin-left: -3.1em;
+          top:50%;
+          margin-top: -3.1em;
+          border-radius: 50%;
+          z-index:10;
+          color: transparent;
+        }
+
+        .csstransforms .sublinks {
+            border-radius: 50%;
+            opacity: 1;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            transition: all .3s ease;
+            -webkit-transform: scale(1);
+            -moz-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .csstransforms .sublinks li {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            overflow: hidden;
+            margin-top: -0.3em;
+            margin-left: -11em;
+            width: 11em;
+            height: 11em;
+            font-size: 1.5em;
+            z-index: -1;
+            -webkit-transition: all .3s ease;
+            -moz-transition: all .3s ease;
+            transition: all .3s ease;
+            -webkit-transform: rotate(76deg) skew(60deg);
+            -moz-transform: rotate(76deg) skew(60deg);
+            -ms-transform: rotate(76deg) skew(60deg);
+            transform: rotate(76deg) skew(60deg);
+            -webkit-transform-origin: 100% 100%;
+            -moz-transform-origin: 100% 100%;
+            transform-origin: 100% 100%;
+            pointer-events: none;
+        }
+
+        .csstransforms .sublinks li > a {
+            position: absolute;
+ 	    top:1em;
+            right: -6.25em;
+            display: block;
+            width: 14.5em;
+            height: 18em;
+            border-radius: 50%;
+            background: #4E98E2;
+            background: -webkit-radial-gradient(transparent 35%, #1C3956 35%);
+            background: -moz-radial-gradient(transparent 35%, #1C3956 35%);
+            background: radial-gradient(transparent 35%, #1C3956 35%);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1em;
+            line-height: 2;
+            -webkit-transform: skew(-60deg) rotate(-75deg) scale(1);
+            -moz-transform: skew(-60deg) rotate(-75deg) scale(1);
+            -ms-transform: skew(-60deg) rotate(-75deg) scale(1);
+            transform: skew(-60deg) rotate(-75deg) scale(1);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            pointer-events: auto;
+        }
+
+        .csstransforms .sublinks li a span {
+            position: relative;
+            height: 30px;
+            overflow: hidden;
+            top: 1em;
+	    margin-top: 8%;
+	    margin-left: -3%;
+            display: block;
+            font-size: .5em;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1em;
+            word-spacing: 9999px;
+        }
+
+        .csstransforms .sublinks li a:hover,
+        .csstransforms .sublinks li a:active,
+        .csstransforms .sublinks li a:focus {
+            background: -webkit-radial-gradient(transparent 35%, #1C3956 35%);
+            background: -moz-radial-gradient(transparent 35%, #1C3956 35%);
+            background: radial-gradient(transparent 35%, #1C3956 35%);
+        }
+
+        .sublinks li a:active{
+            background-color: #000;
+            color: #fff;
+        }
+
+        .csstransforms .sublinks li {
+            -webkit-transition: all .3s ease .3s;
+            -moz-transition: all .3s ease .3s;
+            transition: all .3s ease .3s;
+        }
+
+        .csstransforms .sublinks li:first-child {
+            -webkit-transform: rotate(-20deg) skew(60deg);
+            -moz-transform: rotate(-20deg) skew(60deg);
+            -ms-transform: rotate(-20deg) skew(60deg);
+            transform: rotate(-20deg) skew(60deg);
+        }
+
+
+        .csstransforms .sublinks li:nth-child(2) {
+            -webkit-transform: rotate(12deg) skew(60deg);
+            -moz-transform: rotate(12deg) skew(60deg);
+            -ms-transform: rotate(12deg) skew(60deg);
+            transform: rotate(12deg) skew(60deg);
+        }
+
+        .csstransforms .sublinks  li:nth-child(3) {
+            -webkit-transform: rotate(44deg) skew(60deg);
+            -moz-transform: rotate(44deg) skew(60deg);
+            -ms-transform: rotate(44deg) skew(60deg);
+            transform: rotate(44deg) skew(60deg);
+        }
+
+        .csstransforms .sublinks li:nth-child(4) {
+            -webkit-transform: rotate(59deg) skew(60deg);
+            -moz-transform: rotate(59deg) skew(60deg);
+            -ms-transform: rotate(59deg) skew(60deg);
+            transform: rotate(59deg) skew(60deg);
+        }
+
+        .csstransforms .sublinks li:nth-child(5) {
+            -webkit-transform: rotate(91deg) skew(60deg);
+            -moz-transform: rotate(91deg) skew(60deg);
+            -ms-transform: rotate(91deg) skew(60deg);
+            transform: rotate(91deg) skew(60deg);
+        }
+
+        .csstransforms .sublinks li:nth-child(6) {
+            -webkit-transform: rotate(123deg) skew(60deg);
+            -moz-transform: rotate(123deg) skew(60deg);
+            -ms-transform: rotate(123deg) skew(60deg);
+            transform: rotate(123deg) skew(60deg);
+        }
+
+        .csstransforms .sublinks li:nth-child(7) {
+            -webkit-transform: rotate(172deg) skew(60deg);
+            -moz-transform: rotate(172deg) skew(60deg);
+            -ms-transform: rotate(172deg) skew(60deg);
+            transform: rotate(172deg) skew(60deg);
+        }
+
+        #sublinks {
+            display: none;
+        }
+
+        #sublinks2 {
+            display: none;
+        }
+
+        #sublinks3 {
+            display: none;
+        }
+
+
+        .thumbnails li> .fff .caption { 
+            background:#f9f9f9 !important; 
+            padding:5px;
+            color: #000;
+        }
+        ul.thumbnails { 
+            margin-bottom: 0px;
+        }
+
+
+
+        /* Thumbnail Box */
+        .caption h4 {
+            color: #444;
+        }
+
+        .caption p {  
+            color: #999;
+        }
+
+
+
+        /* Carousel Control */
+        .control-box {
+            overflow: hidden;
+            text-align: center;
+            width: 100%;
+        }
+        .carousel-control{
+            border: 0px;
+            border-radius: 0px;
+            display: inline-block;
+            font-size: 34px;
+            font-weight: 200;
+            line-height: 18px;
+            opacity: 0.5;
+            padding: 4px 30px 4px 25px;
+            position: static;
+            height: 30px;
+            width: 25px;
+        }
+
+        /* centered columns styles */
+        .row-centered {
+            text-align:center;
+            overflow: hidden;
+        }
+        .col-centered {
+            display:inline-block;
+            float:none;
+            /* reset the text-align */
+            text-align:left;
+            /* inline-block space fix */
+            margin-right:-4px;
+            overflow: hidden;
+            color: #000;
+        }
+
+        /* slider
+----------------------*/
+.slide-wrap {
+  margin: 5% auto 0;
+  width: 50%;
+}
+.slide-mask {
+  position: relative;
+  overflow: hidden;
+  height: 205px;
+}
+.slide-group {
+  position: absolute; 
+  top: 0px; 
+  left: 0;
+  width: 100%;
+}
+.slide {
+    height: 205px;
+    text-align: center;  
+}
+
+/* nav
+----------------------*/
+.slide-nav {
+  text-align: center;
+}
+.slide-nav ul {
+    margin: 0;
+    padding: 0;
+}
+.slide-nav li {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #045FB4;
+  cursor: pointer;
+  margin-left: 1em;
+  border-radius: 10px;
+}
+.slide-nav li.current {
+    background: #034787;
+}
+
+        /* Mobile Only */
+        @media (max-width: 767px) {
+            .page-header, .control-box {
+                text-align: center;
+            } 
+        }
+        @media (max-width: 479px) {
+            .caption {
+                word-break: break-all;
+            }
+        }
+
+        @media only screen and (max-width: 1100px) {
+            .slide-wrap{
+                width: 60%;
+            }
+        }
+
+        @media only screen and (max-width: 800px) {
+            .slide-wrap{
+                width: 90%;
+            }
+
+            .slide{
+                font-size: 12px;
+            }
+        }
+
+        @media only screen and (max-width: 600px) {
+            .csstransforms .cn-wrapper {
+                font-size: .68em;
+            }
+
+            .cn-button {
+                font-size: 1em;
+            }
+
+            .sublinks{
+                font-size: 0.7em;
+            }
+
+            .csstransforms .cn-wrapper li img{
+                top: -0.3em;
+                width: 25px;
+            }
+
+            
+        }
+
+        @media only screen and (max-width:400px) {
+            .no-csstransforms .cn-wrapper li {
+                width: 100%;
+                height: 3em;
+                line-height: 3em;
+            }
+
+            .slide-wrap{
+                width: 100%;
+            }
+
+            .slide{
+                font-size: 9px;
+            }
+        }
+
+        @media only screen and (max-width:70px) {
+            body:before {
+              content: "Oops! Your screen resolution is too small!";
+              display: block;
+              position: fixed;
+              padding: 20px;
+              background: #fff;
+              border: 2px #ccc solid;
+              outline: 400px solid rgba(20,20,20, 0.8);
+              left: 50%;
+              top: 50%;
+              color: #000;
+              -webkit-transform: translate(-50%, -50%);
+              -moz-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
+              z-index: 9999;
+            }
+
+            .slide-wrap{
+                background: #000;
+                width: 130%;
+            }
+
+            .slide{
+                font-size: 8px;
+            }
+        }
+
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script>
+        $(document).ready(function(){
+            $("#showDiv").click(function(){   
+                $("#sublinks2").hide();
+                $("#sublinks3").hide();
+		$("#sublinks4").hide();
+                $("#sublinks1").fadeToggle();
+            });
+            $("#showDiv2").click(function(){
+                $("#sublinks1").hide();
+                $("#sublinks3").hide();
+		$("#sublinks4").hide();
+                $("#sublinks2").fadeToggle();
+            });
+            $("#showDiv3").click(function(){
+                $("#sublinks1").hide();
+                $("#sublinks2").hide();
+		$("#sublinks4").hide();
+                $("#sublinks3").fadeToggle();
+            });
+	    $("#showDiv4").click(function(){
+                $("#sublinks1").hide();
+                $("#sublinks2").hide();
+                $("#sublinks3").hide();
+                $("#sublinks4").fadeToggle();
+            });
+            $("#cn-button").click(function(){
+                $("#sublinks1").hide();
+                $("#sublinks2").hide();
+                $("#sublinks3").hide();
+		$("#sublinks4").hide();
+            });
+        });
+        </script>
+    <script src="{% static '/static/js/modernizr-2.6.2.min.js' %}"></script>
+
+    <!-- django CMS -->
+   {% render_block "css" %}
+
+   <!-- Aldryn -->
+   {{ ALDRYN_SNAKE.render_head }}
+
+    </head>
+    <body>
+        <!-- django CMS Toolbar -->
+        {% cms_toolbar %}
+        <div class="container2">
+            <div class="component">
+                <h2>{% page_attribute "page_title" %}</h2>
+                <button class="cn-button" id="cn-button">Menu</button>
+                <div class="cn-wrapper" id="cn-wrapper">
+                    <ul>
+                        {% show_menu 0 0 100 100 "menu1.html" %}
+                     </ul>
+                </div>
+                <div class="sublinks" id="sublinks1">
+                    <ul>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+
+                <div class="sublinks" id="sublinks2">
+                    <ul>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                    </ul>
+                </div>
+
+                <div class="sublinks" id="sublinks3">
+                    <ul>
+                        <li></li>
+                        <li></li>
+                        <li></li>
+                        <li><a href="/en/gallery/photos/"><span>Photos</span></a></li>
+                        <li><a href="/en/gallery/news/"><span>News</span></a></li>
+                    </ul>
+                </div>
+
+        </div><!-- /container2 -->
+
+        <div class="slide-wrap">
+            {% placeholder content or %} {% endplaceholder %}
+        </div>
+
+        <script src="{% static '/static/js/bootstrap.min.js' %}"></script>
+        <script src="{% static '/static/js/polyfills.js' %}"></script>
+        <script src="{% static '/static/js/demo2.js' %}"></script>
+        <script type="text/javascript">
+        // Carousel Auto-Cycle
+        $(document).ready(function() {
+            $('.carousel').carousel({
+                interval: 6000
+            })
+        });
+        </script>
+        <script src="{% static 'static/js/jquery.min.js' %}"></script>
+        <script src="{% static 'static/js/bootstrap.min.js' %}"></script>
+        <script>
+        var $slide = $('.slide'),
+            $slideGroup = $('.slide-group'),
+            $bullet = $('.bullet');
+
+        var slidesTotal = ($slide.length - 1),
+            current = 0,
+            isAutoSliding = true;
+
+        $bullet.first().addClass('current');
+
+        var clickSlide = function() {
+          //stop auto sliding
+          window.clearInterval(autoSlide);
+          isAutoSliding = false;
+
+          var slideIndex = $bullet.index($(this));
+
+          updateIndex(slideIndex);
+        };
+
+        var updateIndex = function(currentSlide) {
+          if(isAutoSliding) {
+            if(current === slidesTotal) {
+              current = 0;
+            } else {
+              current++;
+            }
+          } else {
+              current = currentSlide;
+          }
+
+          $bullet.removeClass('current');
+          $bullet.eq(current).addClass('current');
+
+          transition(current);
+        };
+
+        var transition = function(slidePosition) {
+            $slideGroup.animate({
+              'top': '-' + slidePosition + '00%'
+            });
+        };
+
+        $bullet.on( 'click', clickSlide);
+
+        var autoSlide = window.setInterval(updateIndex, 6000);
+        </script>
+
+    <!-- django CMS -->
+    {% render_block "js" %}
+
+    <!-- Aldryn -->
+    {{ ALDRYN_SNAKE.render_tail }}
+    </body>
+</html>

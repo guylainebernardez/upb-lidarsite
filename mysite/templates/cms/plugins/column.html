@@ -1,0 +1,27 @@
+{% load cms_tags %}
+<style>
+.col {
+	width: {{ instance.width }};
+}
+
+.col img{
+	width: 100px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0 0 40px 0;
+}
+
+@media screen and (max-width: 800px) {
+	.col{
+		width: 100%;	
+	}
+}
+</style>
+
+<div class="column col" style="float: left; padding: 40px;">
+{% for plugin in instance.child_plugin_instances %}
+    	{% render_plugin plugin %}
+{% endfor %}
+</div>
+

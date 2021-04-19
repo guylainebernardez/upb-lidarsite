@@ -1,0 +1,23 @@
+{% load static i18n menu_tags cache %}
+
+{% for child in children %}
+    <li class="{% if child.ancestor %}ancestor{% endif %}
+        {% if child.selected %} active{% endif %}
+        {% if child.children %} dropdown{% endif %}">
+
+        {% if child.get_menu_title == 'Gallery' %}
+            <a href="javascript:void(0)" id="showDiv3"><span>{{ child.get_menu_title }}</span> <img src="{%static '/static/png/gallery.png' %}" /></a>
+        {% else %}
+        <a href="{{ child.get_absolute_url }}">
+            <span>{{ child.get_menu_title }}</span>
+            {% if child.get_menu_title == 'About' %}<img src="{% static '/static/png/home.png' %}">{% endif %}
+	    {% if child.get_menu_title == 'Priority Rivers' %}<img src="{% static '/static/png/rivers.png' %}">{% endif %}
+	    {% if child.get_menu_title == 'Progress Reports' %}<img src="{% static '/static/png/progressreport.png' %}">{% endif %}
+            {% if child.get_menu_title == 'Flood Watch' %}<img src="{% static '/static/png/report.png' %}">{% endif %}
+	    {% if child.get_menu_title == 'Members' %}<img src="{% static '/static/png/members.png' %}">{% endif %}
+            {% if child.get_menu_title == 'Contact Us' %}<img src="{% static '/static/png/contact.png' %}">{% endif %}
+        </a>
+        {% endif %}
+    </li>
+    {% if class and forloop.last and not forloop.parentloop %}{% endif %}
+{% endfor %}

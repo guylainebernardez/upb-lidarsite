@@ -1,0 +1,382 @@
+{% load cms_tags static sekizai_tags menu_tags %}
+<!doctype html>
+<html>
+  <head><title>{% block title %}
+            {% page_attribute page_title %} - {{ request.site.name }}
+        {% endblock title %}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="{% static '/static/css/bootstrap.min.css' %}">
+        <link href="{% static '/static/css/half-slider.css' %}" rel="stylesheet">
+        <link href="http://blackrockdigital.github.io/startbootstrap-agency/css/agency.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <style>
+        @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+        body {
+            font-family: 'Lato', Arial, sans-serif;
+            font-size: 15px;
+        }
+
+        h2,h3,h4{
+            font-family:'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:800;
+            text-align: center;
+        }
+        
+        .modal-dialog {width:600px;}
+        .thumbnail {margin-bottom:6px;}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            position: relative;
+        }
+
+        a{color:#404040}
+
+        #mapdiv {
+            height:100vh; 
+            display: block;
+        }
+
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #fff;
+            position: fixed;
+            height: 3.5em;
+            width: 3.5em;
+            left: 50%;
+            bottom: -1.75em;
+            z-index: 11;
+            padding-bottom: 1em;
+            margin-left: -1.75em;
+            font-size: 1.5em;
+            text-align: center;
+            background-color: #00BFFF;
+            border-radius: 50%;
+        }
+
+        button:hover,
+        button:active,
+        button:focus {
+            background-color: #000;
+        }
+
+     .wrapper {
+          font-size: 1em;
+          position: fixed;
+          width: 26em;
+          height: 26em;
+          bottom: -13em;
+          left: 50%;
+          z-index: 10;
+          overflow: hidden;
+          margin-left: -13em;
+          border-radius: 50%;
+          -webkit-transform: scale(0.1);
+          -webkit-transition: all 0.3s ease;
+     }
+
+     .opened {
+          border-radius: 50%;
+          -webkit-transform: scale(1);
+     }
+
+     .wrapper li {
+          font-size: 1.5em;
+          position: absolute;
+          overflow: hidden;
+          width: 10em;
+          height: 10em;
+          left: 50%;
+          top: 50%;
+          margin-top: -1.3em;
+          margin-left: -10em;
+          -webkit-transform-origin: 100% 100%;
+          -webkit-transition: border 0.3s ease;
+     }
+
+     .wrapper li a {
+          display: block;
+          font-size: 1em;
+          position: absolute;
+          height: 14.5em;
+          width: 14.5em;
+          bottom: -7.25em;
+          right: -7.25em;
+          padding-top: 1.8em;
+          border-radius: 50%;
+          color: #fff;
+          text-decoration: none;
+          text-align: center;
+          opacity: 1;
+          -webkit-transform: skew(-60deg) rotate(-75deg) scale(1);
+          -webkit-transition: opacity 0.3s, color 0.3s;
+     }
+
+     .wrapper li a span {
+         font-size: 1em;
+         top: -0.8em;
+         left: -0.2em;
+         opacity: 0.7;
+     }
+
+     .wrapper img {
+         width: 30px;
+     }
+     .wrapper li:first-child {
+         -webkit-transform: rotate(0deg) skew(60deg);
+     }
+     .wrapper li:nth-child(2) {
+         -webkit-transform: rotate(25deg) skew(60deg);
+     }
+     .wrapper li:nth-child(3) {
+         -webkit-transform: rotate(52deg) skew(60deg);
+     }
+     .wrapper li:nth-child(4) {
+         -webkit-transform: rotate(78deg) skew(60deg);
+     }
+     .wrapper li:nth-child(5) {
+         -webkit-transform: rotate(105deg) skew(60deg);
+     }
+     .wrapper li:nth-child(6) {
+         -webkit-transform: rotate(130deg) skew(60deg);
+     }
+     .wrapper li:nth-child(7) {
+         -webkit-transform: rotate(155deg) skew(60deg);
+     }
+     .wrapper li:nth-child(odd) a {
+         background: -webkit-radial-gradient(transparent 35%, #16CAF2 35%);
+         background: -moz-radial-gradient(transparent 35%, #16CAF2 35%);
+         background: radial-gradient(transparent 35%, #16CAF2 35%);
+     }
+     .wrapper li:nth-child(even) a {
+         background: -webkit-radial-gradient(transparent 35%, #16CAF2 35%);
+         background: -moz-radial-gradient(transparent 35%, #16CAF2 35%);
+         background: radial-gradient(transparent 35%, #16CAF2 35%);
+     }
+
+     .wrapper li a:hover {
+          background: -webkit-radial-gradient(transparent 35%, #15A0BF 35%);
+          background: -moz-radial-gradient(transparent 35%, #15A0BF 35%);
+          background: radial-gradient(transparent 35%, #15A0BF 35%);
+     }
+     .overlay {
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.6);
+         position: fixed;
+         top: 0;
+         bottom: 0;
+         left: 0;
+         right: 0;
+         z-index: 2;
+         opacity: 0;
+         transition: all 0.3s ease;
+         pointer-events: none;
+     }
+     .overlay.on-overlay {
+         opacity: 1;
+         pointer-events: auto;
+     }
+
+     .lists li{
+        border: 1px solid #CFCFCF;
+        background: #f0f0f0;
+        text-align: center;
+        padding: 5px;
+        border-radius: 5px;
+     }
+
+     .lists a{
+        text-decoration: none;
+     }
+
+     .containwhite {
+        width: auto;
+        background: #fff;
+        padding: 40px 30px;
+     }
+
+     .containwhite img {
+        width: 100%;
+     }
+
+     .containgray {
+        width: auto;
+        background: #f0f0f0;
+        padding: 40px 30px;
+     }
+
+     .containgray img {
+        width: auto;
+     }
+
+     .footerlinks li{
+        width: 50px;
+        height: 50px;
+        border-radius: 75%;
+        background: #f0f0f0;
+        margin: 10px;
+        top:20px;
+     }
+
+     .footerlinks li a i {
+        margin-top: 10px;
+        margin-bottom: 20px;
+     }
+
+     .footerlinks a li {
+        width: 80px;
+        height: 80px;
+        background: #fff;
+        border-radius: 75%;
+        display: inline-block;
+        margin: 0px 15px;
+     }
+
+     .footerlinks a li img{
+        width: 100%;
+     }
+
+     /* Responsive awesomeness */
+
+     @media screen and (max-width: 480px) {
+         .csstransforms .cn-wrapper {
+             font-size: .68em;
+         }
+         .cn-button {
+             font-size: 1em;
+         }
+         .csstransforms .cn-wrapper li {
+             font-size: 1.52em;
+         }
+     }
+     @media screen and (max-width: 320px) {
+         .no-csstransforms .cn-wrapper {
+             width: 15.15px;
+             margin-left: -7.5em;
+         }
+         .no-csstransforms .cn-wrapper li {
+             height: 3em;
+             width: 3em;
+         }
+     }
+
+        </style>
+        </head>
+        {% render_block "css" %}
+  <body>
+{% cms_toolbar %}
+        <div class="containwhite">
+            {% placeholder "content" or %}{% endplaceholder %}
+        </div>
+    
+
+  <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4" style="text-align:center; margin-top:40px;">
+                    <span class="copyright"><b>Copyright &copy;</b> <i>UPB Phil-LiDAR 1 (2016)</i></span>
+                </div>
+                <div class="col-md-4" style="text-align:center;">
+                    <ul class="list-inline social-buttons footerlinks">
+                        <li><a href="https://www.facebook.com/DOST-UPB-PHIL-LIDAR-1-714261005340376"><i class="fa fa-facebook fa-2x"></i></a>
+                        </li>
+                        <li><a href="https://www.instagram.com/dost_upb_phillidar1/"><i class="fa fa-instagram fa-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <br />
+                <div class="col-md-4" style="text-align:center; ">
+                    <ul class="list-inline quicklinks">
+                        <h4>Project Partners</h4>
+                        <hr>
+                        <ul class="list-inline social-buttons footerlinks">
+                            <a href="http://pcieerd.dost.gov.ph/"><li><img src="{% static '/static/images/Partners/pcieerd-logo.png' %}" /></li></a>
+                            <a href="http://www.upb.edu.ph/"><li><img src="{% static '/static/images/Partners/up-logo.png' %}" /></li></a>
+                            <a href="https://dream.upd.edu.ph/"><li><img src="{% static '/static/images/Partners/dream-logo.png' %}" /></li></a>
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+        <!-- NAVIGATION LINKS -->
+        <button id="expand-navigation">-</button>
+
+        <section class="wrapper opened">
+            <ul>
+                <li><a href="/en/about" title="Main"><span><img src="{%static "/static/png/home.png" %}" /></span></a></li>
+                <li><a href="/en/priority-rivers" title="Priority Rivers"><span><img src="{%static "/static/png/rivers.png" %}" /></span></a></li>
+                <li><a href="/en/progress-reports" title="Progress Reports"><span><img src="{%static "/static/png/progressreport.png" %}" /></span></a></li>
+                <li><a href="/en/report-flood" title="Report a Flood"><span><img src="{%static "/static/png/report.png" %}" /></span></a></li>
+                <li><a href="/en/gallery" title="Gallery"><span><img src="{%static "/static/png/gallery.png" %}" /></span> </a></li>
+                <li><a href="/en/members" title="Members"><span><img src="{%static "/static/png/members.png" %}" /></span> </a></li>
+                <li><a href="/en/contact-us" title="Contact Us"><span><img src="{%static "/static/png/contact.png" %}" /></span> </a></li>
+           </ul>
+        </section>
+
+        <div class="overlay on-overlay"></div>
+
+
+        <script src="{% static '/static/js/jquery.min.js' %}"></script>
+        <script src="{% static '/static/js/bootstrap.min.js' %}"></script>
+        <script>
+            $('.thumbnail').click(function(){
+                $('.modal-body').empty();
+                var title = $(this).parent('a').attr("title");
+                $('.modal-title').html(title);
+                $($(this).parents('div').html()).appendTo('.modal-body');
+                $('#myModal').modal({show:true});
+            });
+        </script>
+        <script type="text/javascript">
+        (function() {
+          'use strict';
+
+          var isOpen = true;
+          var button = document.querySelector('#expand-navigation');
+          var wrapper = document.querySelector('.wrapper');
+          var overlay = document.querySelector('.overlay');
+
+          button.addEventListener('click', navigationHandler);
+          document.addEventListener('click', closeNavigation);
+
+          function navigationHandler(event) {
+            if (event == null) {
+              event = window.event;
+            }
+
+            event.stopPropagation();
+            !isOpen ? openNavigation() : closeNavigation();
+          }
+
+          function openNavigation() {
+            isOpen = true;
+
+            button.innerHTML = '-';
+            wrapper.className = 'wrapper opened';
+            overlay.className = 'overlay on-overlay';
+          }
+
+          function closeNavigation() {
+            isOpen = false;
+
+            button.innerHTML = '+';
+            wrapper.className = 'wrapper';
+            overlay.className = 'overlay';
+          }
+        })();
+        </script>
+        <!-- Script to Activate the Carousel -->
+    <script>
+    $('.carousel').carousel({
+        interval: 5000 //changes the speed
+    })
+    </script>
+        {% render_block "js" %}
+</body></html>

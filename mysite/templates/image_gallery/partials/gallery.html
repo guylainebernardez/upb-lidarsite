@@ -1,0 +1,40 @@
+{% load i18n thumbnail cms_tags %}
+<h3>{{ gallery.title }}</h3>
+<h4>{% if gallery.date %}{{ gallery.date|date }}, {% endif %}{{ gallery.location }}</h4>
+<p>{% render_placeholder gallery.description "description" %}</p>
+<div class="row">
+	{% for image in gallery.get_folder_images %}
+    <div class="col-lg-3 col-sm-4 col-6"><a href="#" title="Image 1"><img src="{% thumbnail image.file 1000x1000 crop upscale %}" class="thumbnail img-responsive"></a></div>
+    {% endfor %}
+</div>
+
+<style>
+.modal-revised{
+  width: 45%; 
+  position: fixed; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 820px) {
+  .modal-revised{
+    width: 75%;
+  }
+}
+</style>
+
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-revised">
+  <div class="modal-content">
+	<div class="modal-header">
+		<ul class="pager">
+    		<li class="close" data-dismiss="modal">×</li>
+  		</ul>
+	</div>
+	<div class="modal-body">
+		
+	</div>
+   </div>
+  </div>
+</div>

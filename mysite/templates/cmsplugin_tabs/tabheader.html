@@ -1,0 +1,83 @@
+{% load sekizai_tags cms_tags %}
+
+{% block content %}
+{% addtoblock "js" %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    // Choose the first tab (for no match)
+    $("#tab-{{ instance.id }} a:first").tab('show');
+
+    // get ALL THE TABS, match against #whatever
+    $("#tab-{{ instance.id }} a").each(function(i){
+        if ($(this).text().toLowerCase() == location.hash.substring(1).toLowerCase()){
+            $(this).tab('show');
+            return false;
+        }
+    });
+  });
+</script>
+{% endaddtoblock %}
+{% endblock %}
+<style>
+
+.tab-p{
+  border-left: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
+  padding: 15px;
+}
+
+.tab-panes {
+    display: none;
+    border-left: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
+  padding: 15px;
+}
+
+</style>
+
+
+
+<ul class="nav nav-tabs" id="tab-{{ instance.id }}">
+{% for tab in instance.child_plugin_instances %}
+  {% if tab.title == 'OVERVIEW' %}
+  <li class="tab1">
+    <a href="#tab-{{ tab.id }}" data-toggle="tab">{{ tab.title }}</a>
+  </li>
+  {% else %}
+    <li class="tabn">
+      <a href="#tab-{{ tab.id }}" data-toggle="tab">{{ tab.title }}</a>
+    </li>
+  {% endif %}
+{% endfor %}
+</ul>
+<div class="tab-content">
+{% for tab in instance.child_plugin_instances %}
+  {% if tab.title == 'OVERVIEW' %}
+  <div class="tab-p fade" id="tab-{{ tab.id }}">
+    {% render_plugin tab %}
+  </div>
+  {% else %}
+  <div class="tab-panes fade" id="tab-{{ tab.id }}" >
+    {% render_plugin tab %}
+  </div>
+  {% endif %}
+{% endfor %}
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $(".nav .tabn").click(function(){
+        $(".tab-content .tab-p").hide();
+    });
+});
+
+$(document).ready(function(){
+    $(".nav .tab1").click(function(){
+        $(".tab-content .tab-p").show();
+    });
+});
+</script>

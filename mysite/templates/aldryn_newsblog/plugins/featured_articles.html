@@ -1,0 +1,11 @@
+{% load i18n apphooks_config_tags %}
+
+{% for article in articles_list %}
+<li>
+    <div class="slider-container">
+    {% include "aldryn_newsblog/includes/article2.html" with namespace=instance.app_config.namespace %}
+    </div>
+</li>
+{% empty %}
+    <p>{% trans "No items available" %}</p>
+{% endfor %}
